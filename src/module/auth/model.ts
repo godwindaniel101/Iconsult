@@ -12,7 +12,7 @@ export type UserDocument = mongoose.Document & {
   category: string;
   user_type: string;
   company: string;
-  is_owner:boolean;
+  is_owner: boolean;
   profile: string;
   createdAt: Date;
   updatedAt: Date;
@@ -34,13 +34,19 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "customer"],
       default: "customer",
     },
-    is_owner:{type:Boolean,default:false},
+    is_owner: { type: Boolean, default: false },
     company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
     profile: { type: mongoose.Schema.Types.ObjectId, ref: "Profile" },
     password: { type: String, required: true },
   },
   { timestamps: true }
 );
+UserSchema.methods.comparePassword = async function (candidatePassword: string) {
+
+  const user = this as UserDocument
+  
+  return bcrypt.compare(candidatePassword, user.password).catch((e) => false )
+}
 
 UserSchema.pre("save", async function (next: mongoose.HookNextFunction) {
   const user = this as UserDocument;

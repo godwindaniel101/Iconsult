@@ -8,6 +8,9 @@ import AppError from "../../utils/error/AppError";
 import User, { UserDocument } from "./model";
 import { CompanyUserDocument } from "./types";
 import Company, { CompanyDocument } from "../company/model";
+import Session, { SessionDocument } from "./session";
+import { sign } from "../../utils/token";
+import {omit} from 'lodash'
 
 //function to check if a user exist
 export const userExist = async (input: DocumentDefinition<UserDocument>) => {
@@ -47,6 +50,35 @@ export const companyRegisterHandler = async (
     return new AppError(e, 500);
   }
 };
+
+export const validatePassword = async (input: DocumentDefinition<UserDocument>) => {
+  const user = await findUser({ email: input.email })
+  if (!user || !user.comparePassword(input.password)) return false;
+
+  return omit(user.toJSON(), "password");
+}
+
+export const createSession = async (userId: String, userAgent: String) => {
+  return Session.create({ user: userId, userAgent: userAgent })
+}
+
+export const createAccessToken = async ({ user, session }: { user: Omit<UserDocument, 'password'> | LeanDocument<Omit<UserDocument, 'password'>> , session: LeanDocument<SessionDocument> }) => {
+  
+  const accessTokenExpiresIn = process.env.ACCESS_TOKEN_EXPIRING as string;
+  
+  const token = await sign({ ...user, session: session._id }, { expiresIn: accessTokenExpiresIn })
+  
+  return token
+}
+
+export const createRefreshToken = async (session: LeanDocument<SessionDocument>) => {
+
+  const refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRING as string;
+
+  const token = await sign({session}, { expiresIn: refreshTokenExpiresIn })
+  
+  return token
+}
 
 export const findUser = (query: FilterQuery<UserDocument>) => {
   return User.findOne(query);

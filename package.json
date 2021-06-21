@@ -11,12 +11,16 @@
   "license": "ISC",
   "dependencies": {
     "@types/express-rate-limit": "^5.1.2",
+    "@types/jsonwebtoken": "^8.5.2",
+    "@types/lodash": "^4.14.170",
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.2.6",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
     "mongoose": "^5.12.14",
     "pino-pretty": "^5.0.2"
   },
