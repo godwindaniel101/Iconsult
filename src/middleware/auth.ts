@@ -7,6 +7,7 @@ import { SessionDocument } from "../module/auth/session";
 import { reIssueAccessToken } from "../module/auth/service";
 import { NextFunction, Response, Request } from "express"
 import '../utils/types/auth'
+import { ObjectId } from 'mongoose';
 
 export default (req: Request, res: Response, next: NextFunction) => {
 
@@ -25,6 +26,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
 
     return setUser(decoded as UserDocument, req, next)
 }
+
 const setUser = (user: UserDocument, req: Request, next: NextFunction) => {
     //set current logged in user;
     req.user = user
@@ -48,5 +50,5 @@ const regenerateAccessToken = async (refreshToken: string, req: Request, res:Res
         return setUser(decoded as UserDocument, req, next)
     }
 
-    next(new AppError('Expired Token', 419))
+    next(new AppError('Expired Token', 403))
 }

@@ -10,7 +10,7 @@ authRoutes.route('/login').post(limiter.loginLimit , request(schema.login), cont
 authRoutes.route('/register').post(limiter.registionLimit , request(schema.registration), controller.register)
 authRoutes.route('/company-register').post(limiter.registionLimit , request(schema.companyRegistration), controller.companyRegister)
 authRoutes.route('/forget-password').post(request(schema.forgetPassword),controller.forgetPassword)
-authRoutes.route('/reset-password/:resetToken').post(request(schema.resetPassword), controller.resetPassword)
+authRoutes.route('/reset-password/:resetToken').post(controller.resetPassword)
 authRoutes.route('/logout').post(auth , controller.logout)
 
 export default authRoutes;
