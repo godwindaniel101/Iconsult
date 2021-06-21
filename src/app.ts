@@ -2,6 +2,7 @@ import helmet from "helmet";
 import  express from "express"
 import mongoSanitize from "express-mongo-sanitize"
 import { appLimit } from "./middleware/limiter";
+import globalError from './utils/error/globalError'
 import routes from "./route";
 
 const app = express();
@@ -21,4 +22,6 @@ app.use(appLimit)
 app.use('/api/v1', routes)
 //entry point for api calls
 
+app.use(globalError)
+//catch all errors
 export default app;

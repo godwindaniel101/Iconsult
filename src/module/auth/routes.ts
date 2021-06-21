@@ -1,10 +1,15 @@
 import express from 'express'
 import * as controller from './controller';
 import * as limiter from '../../middleware/limiter'
-const routes = express.Router()
+import * as schema from './schema'
+import request from '../../middleware/request'
+const authRoutes = express.Router()
 
-routes.route('/login').post(limiter.loginLimit , controller.login)
-routes.route('/register').post(limiter.registionLimit , controller.register)
-routes.route('/forget-password').post(controller.forgetPassword)
-routes.route('/reset-password').post( controller.resetPassword)
-routes.route('/logout').post(controller.logoutPassword)
+authRoutes.route('/login').post(limiter.loginLimit , request(schema.login), controller.login)
+authRoutes.route('/register').post(limiter.registionLimit , request(schema.registration), controller.register)
+authRoutes.route('/company-register').post(limiter.registionLimit , request(schema.companyRegistration), controller.companyRegister)
+authRoutes.route('/forget-password').post(request(schema.forgetPassword),controller.forgetPassword)
+authRoutes.route('/reset-password').post(request(schema.resetPassword), controller.resetPassword)
+authRoutes.route('/logout').post(controller.logoutPassword)
+
+export default authRoutes;

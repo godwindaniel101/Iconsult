@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon -r dotenv/config --config nodemon.json ./src/server.ts dotenv_config_path=./.env",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cypress open"
   },
   "author": "I.G Daniel",
   "license": "ISC",
@@ -27,6 +27,7 @@
     "@types/mongoose": "^5.11.97",
     "@types/pino": "^6.3.8",
     "@types/yup": "^0.29.11",
+    "cypress": "^7.5.0",
     "dayjs": "^1.10.5",
     "pino": "^6.11.3",
     "ts-node": "^10.0.0",
