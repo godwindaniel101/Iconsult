@@ -19,8 +19,9 @@ class ErrorContainer {
         });
     }
     handleUncaught = () => {
-        this.res.status(500).json({
-            error: this.err
+        const errorCodde = this.err.statusCode || 500 ;
+        this.res.status(errorCodde).json({
+            error: this.err.message
         });
     }
 }

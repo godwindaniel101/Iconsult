@@ -83,7 +83,7 @@ export const createRefreshToken = async (session: LeanDocument<SessionDocument>)
 export const reIssueAccessToken = async(input:LeanDocument<SessionDocument>) =>{
     const session = await Session.findById(input._id)
 
-    if(!session) return false ;
+    if(!session || !session.valid) return false ;
 
     let userData  =  await User.findOne({_id: session.user});
   
@@ -94,6 +94,18 @@ export const reIssueAccessToken = async(input:LeanDocument<SessionDocument>) =>{
     const accessToken = createAccessToken({session, user})
 
     return accessToken;
+}
+export const logoutUser = async(input:DocumentDefinition<UserDocument>) =>{
+ 
+   const session = await Session.updateMany({user : input._id}, {valid : false})
+   
+   if(!session) return  false;
+
+   return true;
+}
+
+export const resetTokenHandler = (data :any)=>{
+return 'xxxx';
 }
 export const findUser = (query: FilterQuery<UserDocument>) => {
   return User.findOne(query);

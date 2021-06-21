@@ -6,7 +6,7 @@ import { UserDocument } from "../module/auth/model";
 import { SessionDocument } from "../module/auth/session";
 import { reIssueAccessToken } from "../module/auth/service";
 import { NextFunction, Response, Request } from "express"
-import './types'
+import '../utils/types/auth'
 
 export default (req: Request, res: Response, next: NextFunction) => {
 
@@ -21,18 +21,17 @@ export default (req: Request, res: Response, next: NextFunction) => {
     const { decoded, expired, err } = verify(accessToken);
 
     //attempts to re assign a new access token if the refresh token is still valid
-    if (expired) return regenerateAccessToken(refreshToken, req, next)
+    if (expired) return regenerateAccessToken(refreshToken, req, res, next)
 
     return setUser(decoded as UserDocument, req, next)
 }
 const setUser = (user: UserDocument, req: Request, next: NextFunction) => {
-    console.log(user)
     //set current logged in user;
     req.user = user
 
     next()
 }
-const regenerateAccessToken = async (refreshToken: string, req: Request, next: NextFunction) => {
+const regenerateAccessToken = async (refreshToken: string, req: Request, res:Response, next: NextFunction) => {
 
     const { decoded, expired, err } = verify(refreshToken);
 
@@ -42,12 +41,12 @@ const regenerateAccessToken = async (refreshToken: string, req: Request, next: N
 
     if (newAccessToken) {
 
-        const { decoded, expired, err } = verify(newAccessToken);
+        res.setHeader("x-access-token", newAccessToken);
 
-            console.log('a successful reset token just occureed',decoded)
+        const { decoded, expired, err } = verify(newAccessToken);
             
         return setUser(decoded as UserDocument, req, next)
     }
 
-    next(new AppError('Expired Token', 403))
+    next(new AppError('Expired Token', 419))
 }

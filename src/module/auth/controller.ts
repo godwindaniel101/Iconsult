@@ -1,6 +1,7 @@
 import catchAsync from "../../utils/error/catchAsync";
 import { NextFunction, Request, Response } from "express"
 import * as service from "./service";
+import config from 'lodash'
 import AppError from "../../utils/error/AppError";
 
 export const login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -48,16 +49,32 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
     })
 })
 
-export const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-    return 'it is';
+export const forgetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userCheck = await service.userExist(req.body)
+
+    if (!userCheck) return next(new AppError('We have no record of this email', 404));
+    
+        const resetToken = service.resetTokenHandler(req.body)
+
+    return res.status(201).json({
+        resetToken
+    })
 })
 
 export const resetPassword = catchAsync(async (req: Request, res: Response) => {
-    return 'it is';
+   const resetToken  = config.get(req.params , 'resetToken')
+
+   return res.status(201).json({
+    message : 'Password succesffuly reset'
+})
 })
 
-export const logoutPassword = catchAsync(async (req: Request, res: Response) => {
+export const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const logoutSession  = service.logoutUser(req.user)
+
+    if(!logoutSession) next(new AppError('An error occured', 500))
+
     return res.status(200).json({
-        message: 'logout successful'
+        message:'logout successful' 
     })
 })

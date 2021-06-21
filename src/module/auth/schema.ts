@@ -52,7 +52,15 @@ export const forgetPassword = object({
 export const resetPassword = object({
     params: object({
         resetToken: string()
-            .required("email is required")
-            .email("a valid email is required"),
+            .required("reset token is required")
     }),
+    body: object({
+        passwordConfirmation: string()
+            .required("Password Confirmation is required")
+            .oneOf([ref("password")]),
+        password: string()
+            .required("Password is required")
+            .min(8, "password most be a minimum of 8 characters")
+            .matches(/^[a-zA-Z0-9_.-]*$/, "Password can only contain Latin letters."),
+    })
 });
