@@ -10,7 +10,7 @@ import { CompanyUserDocument } from "./types";
 import Company, { CompanyDocument } from "../company/model";
 import Session, { SessionDocument } from "./session";
 import { sign } from "../../utils/token";
-import {omit} from 'lodash'
+import config,{omit} from 'lodash'
 
 //function to check if a user exist
 export const userExist = async (input: DocumentDefinition<UserDocument>) => {
@@ -59,7 +59,7 @@ export const validatePassword = async (input: DocumentDefinition<UserDocument>) 
 }
 
 export const createSession = async (userId: String, userAgent: String) => {
-  return Session.create({ user: userId, userAgent: userAgent })
+  return (await Session.create({ user: userId, userAgent: userAgent })).toJSON()
 }
 
 export const createAccessToken = async ({ user, session }: { user: Omit<UserDocument, 'password'> | LeanDocument<Omit<UserDocument, 'password'>> , session: LeanDocument<SessionDocument> }) => {
@@ -75,11 +75,26 @@ export const createRefreshToken = async (session: LeanDocument<SessionDocument>)
 
   const refreshTokenExpiresIn = process.env.REFRESH_TOKEN_EXPIRING as string;
 
-  const token = await sign({session}, { expiresIn: refreshTokenExpiresIn })
+  const token = await sign({...session}, { expiresIn: refreshTokenExpiresIn })
   
   return token
 }
 
+export const reIssueAccessToken = async(input:LeanDocument<SessionDocument>) =>{
+    const session = await Session.findById(input._id)
+
+    if(!session) return false ;
+
+    let userData  =  await User.findOne({_id: session.user});
+  
+    if(!userData) return false
+
+    const user = omit(userData.toJSON(), "password") as UserDocument
+
+    const accessToken = createAccessToken({session, user})
+
+    return accessToken;
+}
 export const findUser = (query: FilterQuery<UserDocument>) => {
   return User.findOne(query);
 };

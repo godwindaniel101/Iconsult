@@ -17,7 +17,6 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
 
     const refreshToken = await service.createRefreshToken(session)
 
-    console.log(accessToken, refreshToken);
     return res.status(200).json({
         accessToken, refreshToken
     })
@@ -58,5 +57,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 })
 
 export const logoutPassword = catchAsync(async (req: Request, res: Response) => {
-    return 'it is';
+    return res.status(200).json({
+        message: 'logout successful'
+    })
 })

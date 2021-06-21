@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose,{ObjectId} from 'mongoose';
 
 export type SessionDocument = mongoose.Document & {
+    _id: ObjectId;
     user: string;
     userAgent: string;
     createdAt: Date;
